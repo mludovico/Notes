@@ -1,6 +1,8 @@
 package br.com.mludovico.notes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new NotesAdapter();
 
         recyclerView.setLayoutManager(layoutManager);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
 
         FloatingActionButton button = findViewById(R.id.add_note_button);
@@ -50,4 +53,18 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         adapter.reload();
     }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            Note current = (Note) viewHolder.itemView.getTag();
+            database.noteDao().delete(current.id);
+            adapter.reload();
+        }
+    };
 }

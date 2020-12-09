@@ -15,4 +15,7 @@ public interface NoteDao {
 
     @Query("UPDATE notes SET contents = :contents WHERE id = :id")
     void save(String contents, int id);
+
+    @Query("DELETE FROM notes WHERE id = :id")
+    void delete(int id);
 }
